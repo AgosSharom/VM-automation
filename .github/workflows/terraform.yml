@@ -1,0 +1,47 @@
+provider "null" {}
+
+variable "sas_token" {
+  description = "SAS token for accessing Azure Storage"
+  type        = string
+  default     = "sv=2022-11-02&ss=f&srt=sco&sp=r&se=2025-12-05T20:53:32Z&st=2024-09-12T12:53:32Z&spr=https&sig=tUEGB9aVxnWbJ7u22r4KT10hB%2B%2BVYUv46kJujXVHE0k%3D"
+}
+
+variable "computer_name" {
+  description = "Name of the computer object to create"
+  type        = string
+  default     = "AZEU-DEV-AUT02"
+}
+
+variable "username" {
+  description = "Username for AD credentials"
+  type        = string
+  default     = "adm_sharom02"
+}
+
+variable "password" {
+  description = "Password for AD credentials"
+  type        = string
+  default     = "Lailaazwa95@"
+}
+
+resource "null_resource" "create_ad_computer" {
+  provisioner "local-exec" {
+    command = <<EOT
+      # Define the URL for the PowerShell script
+      $script_url = "https://stafsxsharesdesti.file.core.windows.net/automation-scripts/CreateADobject%20-%20NEU.ps1?${var.sas_token}"
+      
+      # Define the path for the downloaded PowerShell script
+      $script_path = "C:\\Temp\\CreateADobject-NEU.ps1"
+      
+      # Download the PowerShell script
+      Invoke-WebRequest -Uri $script_url -OutFile $script_path
+      
+      # Execute the PowerShell script with required parameters
+      powershell.exe -ExecutionPolicy Bypass -File $script_path -computerName ${var.computer_name} -username ${var.username} -password ${var.password}
+    EOT
+  }
+}
+
+output "ad_computer_creation" {
+  value = "Computer object ${var.computer_name} is being created in AD."
+}
