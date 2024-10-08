@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   terraform:
@@ -16,27 +17,29 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.0.0  # specify your Terraform version here
+          terraform_version: 1.0.0  # Specify your Terraform version here
 
       - name: Azure Login
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}  # Use the full JSON string for service principal credentials
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}        # Reference individual secret for Client ID
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}  # Reference individual secret for Client Secret
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}         # Reference individual secret for Tenant ID
 
       - name: Terraform Init
         run: terraform init
-        working-directory: ./terraform  # specify the directory containing your Terraform files
+        working-directory: ./terraform  # Specify the directory containing your Terraform files
 
       - name: Terraform Validate
         run: terraform validate
-        working-directory: ./terraform  # specify the directory containing your Terraform files
+        working-directory: ./terraform  # Specify the directory containing your Terraform files
 
       - name: Terraform Plan
         id: plan
         run: terraform plan -out=tfplan -var-file=terraform.tfvars
-        working-directory: ./terraform  # specify the directory containing your Terraform files
+        working-directory: ./terraform  # Specify the directory containing your Terraform files
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve tfplan
-        working-directory: ./terraform  # specify the directory containing your Terraform files
+        working-directory: ./terraform  # Specify the directory containing your Terraform files
