@@ -6,6 +6,9 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  id-token: write  # Grant permission to use the ID token
+
 jobs:
   terraform:
     runs-on: ubuntu-latest
@@ -26,6 +29,7 @@ jobs:
           client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}  # Reference the individual secret for Client Secret
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}         # Reference the individual secret for Tenant ID
           allow-no-subscriptions: true                        # Allow login without a subscription ID
+          auth-type: 'servicePrincipal'                       # Specify the authentication type
 
       - name: Terraform Init
         run: terraform init
