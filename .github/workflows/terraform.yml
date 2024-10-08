@@ -21,9 +21,9 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}  # Use the full JSON string for service principal credentials
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}  # Add this if your Terraform code doesn't already include it
 
       - name: Terraform Init
         run: terraform init
@@ -35,7 +35,7 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -out=tfplan -var-file=terraform.tfvars ./terraform/main.tf  # specify main.tf
+        run: terraform plan -out=tfplan -var-file=terraform.tfvars
         working-directory: ./terraform  # specify the directory containing your Terraform files
 
       - name: Terraform Apply
