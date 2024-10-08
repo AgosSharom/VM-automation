@@ -6,15 +6,6 @@ on:
       subscription_id:
         description: 'Azure Subscription ID'
         required: true
-      client_id:
-        description: 'Azure Client ID'
-        required: true
-      client_secret:
-        description: 'Azure Client Secret'
-        required: true
-      tenant_id:
-        description: 'Azure Tenant ID'
-        required: true
       location:
         description: 'Azure Location (e.g., North Europe)'
         required: true
@@ -53,9 +44,9 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve \
           -var="subscription_id=${{ github.event.inputs.subscription_id }}" \
-          -var="client_id=${{ github.event.inputs.client_id }}" \
-          -var="client_secret=${{ github.event.inputs.client_secret }}" \
-          -var="tenant_id=${{ github.event.inputs.tenant_id }}" \
+          -var="client_id=${{ secrets.AZURE_CLIENT_ID }}" \
+          -var="client_secret=${{ secrets.AZURE_CLIENT_SECRET }}" \
+          -var="tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
           -var="location=${{ github.event.inputs.location }}" \
           -var="resource_group_name=${{ github.event.inputs.resource_group_name }}" \
           -var="vm_size=${{ github.event.inputs.vm_size }}" \
