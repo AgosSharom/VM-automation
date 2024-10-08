@@ -22,8 +22,10 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}  # Reference the combined JSON secret for credentials
-          allow-no-subscriptions: true  # Allow login without a subscription ID
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}        # Reference the individual secret for Client ID
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}  # Reference the individual secret for Client Secret
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}         # Reference the individual secret for Tenant ID
+          allow-no-subscriptions: true                        # Allow login without a subscription ID
 
       - name: Terraform Init
         run: terraform init
