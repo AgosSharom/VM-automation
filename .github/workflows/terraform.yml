@@ -22,14 +22,22 @@ jobs:
         with:
           terraform_version: 1.0.0  # Specify your Terraform version here
 
+      - name: Extract Azure Credentials from Secret
+        id: azure-creds
+        run: |
+          echo "::set-output name=client_id::$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientId)"
+          echo "::set-output name=client_secret::$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientSecret)"
+          echo "::set-output name=tenant_id::$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .tenantId)"
+        shell: bash
+
       - name: Azure Login
-        uses: azure/login@v1
+        uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}        # Reference the individual secret for Client ID
-          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}  # Reference the individual secret for Client Secret
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}         # Reference the individual secret for Tenant ID
-          allow-no-subscriptions: true                        # Allow login without a subscription ID
-          auth-type: 'servicePrincipal'                       # Specify the authentication type
+          client-id: ${{ steps.azure-creds.outputs.client_id }}        # Use extracted Client ID
+          client-secret: ${{ steps.azure-creds.outputs.client_secret }}  # Use extracted Client Secret
+          tenant-id: ${{ steps.azure-creds.outputs.tenant_id }}         # Use extracted Tenant ID
+          allow-no-subscriptions: true                                  # Allow login without a subscription ID
+          auth-type: 'servicePrincipal'                                 # Specify the authentication type
 
       - name: Terraform Init
         run: terraform init
