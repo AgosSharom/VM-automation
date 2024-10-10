@@ -1,0 +1,17 @@
+name: Deploy VM
+
+on:
+  repository_dispatch:
+    types: [deploy_vm]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Deploy VM
+        run: |
+          echo "Deploying VM with the following details:"
+          echo "${{ github.event.client_payload }}"
